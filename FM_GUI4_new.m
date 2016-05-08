@@ -22,7 +22,7 @@ function varargout = FM_GUI4(varargin)
 
 % Edit the above text to modify the response to help FM_GUI4
 
-% Last Modified by GUIDE v2.5 06-May-2016 23:19:46
+% Last Modified by GUIDE v2.5 08-May-2016 21:17:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -281,20 +281,24 @@ if(strcmp(signal_type,'Cos Wave'))
    M = cos(2*pi*fm*ti); %generic message
 elseif(strcmp(signal_type,'Sin wave'))
    M = sin(2*pi*fm*ti); %generic message
+elseif(strcmp(signal_type,'Square'))
+    M=2*floor(ti*fm)-floor(2*ti*fm)+1;
+    
 end
 k =0; %used for drawing
 tp = 0:0.001:500; %time 
 delay = 0.1; %delay when plotting
 carrier = cos(2*pi*fc*tp); %the carrier
 %% Message
-
-M = cos(2*pi*fm*ti); %generic message
 Mi = int(M,ti); % integrated message
 ti = tp; % to substitute
 Mii = eval(Mi); %substitute
 M = eval(M);% message but as array to plot
 FM =  cos(2*pi*fc*tp+B.*Mii); % the Fm transmitted message
-
+noise =  get(handles.checkbox3,'Value') ;
+if(noise == 1)
+    FM = awgn(FM,9);
+end
 %% Plotting
 myfigure1 = figure('name','FM transmitter');
 while (1)
@@ -318,8 +322,9 @@ xlabel('time')
 ylabel('Amplitude')
 figure(myfigure1);
 subplot(3,1,3)
-plot(tp,FM)
+plot(tp,FM,'color','red')
 xlim([0+k 10+k])
+ylim([-1 1])
 xlabel('time')
 ylabel('Amplitude')
 title('FM transmitted signal')
@@ -341,3 +346,12 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in checkbox3.
+function checkbox3_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox3
